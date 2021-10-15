@@ -14,7 +14,7 @@ let vidas = 3;
 let vidaBoss = 5;
 let jumping = false;
 let enemigosDestruidos = 0;
-const enemigosHastaBoss = 1;
+const enemigosHastaBoss = 15;
 let isBossPhase = false;
 
 //Boss vars
