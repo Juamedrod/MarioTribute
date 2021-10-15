@@ -1,6 +1,7 @@
 let escenario = document.querySelector('#escenario');
 let mario = document.querySelector('#runner img');
 let gameOverDiv = document.querySelector('.gameover');
+let runner = document.querySelector('#runner');
 let avanceEscenario = 0;
 let malosArray = new Array();
 let proyectiles = new Array();
@@ -21,7 +22,8 @@ let seta = setInterval(salirSeta, tiempoIntervalo);
 function moverEscenario() {
     avanceEscenario -= 10;
     escenario.style.backgroundPosition = avanceEscenario + 'px 0px';
-    moveEnemies();
+    proyectilCheck();
+    //moveEnemies(); REMOVER COENTARIO VERSION FINAL
 
 }
 
@@ -45,7 +47,14 @@ function correr(e) {
     }
 }
 
-function disparar() {
+function disparar(e) {
+    if (e.keyCode == 69 && proyectiles.length < 2) {
+        let proyectil = document.createElement('div');
+        proyectil.style.marginLeft = '80px';
+        proyectil.className = 'proyectil';
+        proyectiles.push(proyectil)
+        runner.appendChild(proyectil);
+    }
 
 }
 
@@ -76,6 +85,24 @@ function moveEnemies() {
             malosArray.splice(index, 1);
         }
     });
+}
+
+function proyectilCheck() {
+    proyectiles.forEach((proyectil, proyIndex) => {
+        malosArray.forEach((malo, index) => {
+            if (colision(proyectil, malo)) {
+                malo.parentNode.removeChild(malo);
+                malosArray.splice(index, 1);
+                proyectil.parentNode.removeChild(proyectil);
+                proyectiles.splice(proyIndex, 1);
+            }
+        });
+
+        //check si el proyectil sale de mapa
+
+    })
+
+
 }
 
 function dañar(malo, index) {

@@ -16,6 +16,17 @@
     left: 50px;
 }
 
+.proyectil {
+    position: absolute;
+    bottom: 40px;
+    left: 50px;
+    width: 40px;
+    height: 10px;
+    background-color: red;
+    border-radius: 1px ;
+    border: 1px dotted yellowgreen;
+}
+
 .malo{
     width: 100px;
     height: 100px;
