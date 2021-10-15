@@ -56,6 +56,16 @@
     right: 0px;
 }   
 
+.bosstarget{
+    width: 100px;
+    height: 100px;
+    background-image: url('https://art.pixilart.com/909f28ec737d033.png?v=1526669287');
+    background-size: cover;
+    position: absolute;
+    bottom: 30px;
+    right: 0px;
+}  
+
 .gameover{
     position: absolute;
     width: 816px;

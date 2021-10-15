@@ -17,6 +17,10 @@ let enemigosDestruidos = 0;
 const enemigosHastaBoss = 1;
 let isBossPhase = false;
 
+//Boss vars
+
+
+
 document.addEventListener('keydown', saltar);
 document.addEventListener('keyup', correr);
 document.addEventListener('keyup', disparar);
@@ -26,15 +30,19 @@ document.addEventListener('keyup', disparar);
 let intervaloEscenario = setInterval(moverEscenario, 100);
 
 let tiempoIntervalo = Math.random() * 5000 + 200;
-let seta = setInterval(salirSeta, tiempoIntervalo);
+let seta = setInterval(salirSeta, tiempoIntervalo);//intervalo de spawn de setas en el modo normal
 score.innerText = `Enemy killed: ${enemigosDestruidos}`;
 
-function moverEscenario() {
+function moverEscenario() {//intervalo global que gobierna los aspectos basicos del juego.
     avanceEscenario -= 10;
     escenario.style.backgroundPosition = avanceEscenario + 'px 0px';
     isBossPhase ? proyectilCheckBoss() : proyectilCheck();
-    moveEnemies();
+    isBossPhase ? moveBossTargets() : moveEnemies();
 
+}
+
+function intervaloBoss() {//cuando entramos en la fase dle boss final este es el intervalo de spawn de ataques
+    bossattack();
 }
 
 function saltar(e) {
@@ -63,6 +71,7 @@ function correr(e) {
 
 
 function finalBossStage() {
+
     clearInterval(seta);
     isBossPhase = true;
     setTimeout(() => {
@@ -78,6 +87,7 @@ function finalBossStage() {
         boss.appendChild(p);
         escenario.appendChild(boss);
         bossTargets.push(boss);
+        setInterval(intervaloBoss, 1000);
     }, 2000);
 
 }
@@ -125,6 +135,38 @@ function moveEnemies() {//muevo los enemigos en el array de enemigos.
     });
 }
 
+function bossattack() {
+    let bossTarget = document.createElement('div');
+    bossTarget.style.marginRight = '0px';
+    bossTarget.className = 'bosstarget';
+    bossTargets.push(bossTarget)
+    escenario.appendChild(bossTarget);
+}
+
+function moveBossTargets() {
+    bossTargets.forEach((bossTarget, index) => {
+        console.log('index del bosstarget: ' + index);
+        if (index > 0) {
+            let actualOffset = parseInt(bossTarget.style.marginRight.slice(0, -2));
+
+            if (colision(mario, bossTarget)) {
+                vidas > 1 ? dañar(bossTarget) : gameOver()
+            } else if (actualOffset <= 850) {
+
+                actualOffset += 20;
+                bossTarget.style.marginRight = actualOffset + 'px';
+            } else {
+                bossTarget.parentNode.removeChild(bossTarget);
+                bossTargets.splice(index, 1);
+
+            }
+        }
+
+    });
+
+
+}
+
 
 function proyectilCheck() {  //Check de las colisiones de los proyectiles y el update de su posicion.
     proyectiles.forEach((proyectil, proyIndex) => {
@@ -165,8 +207,11 @@ function proyectilCheckBoss() {
                 console.log('proyectil hit');
                 if (index == 0) {
                     vidaBoss--;
-                    let p = document.createElement('p');
+                    proyectil.parentNode.removeChild(proyectil);
+                    proyectiles.splice(proyIndex, 1);
+                    let p = document.querySelector('.scoreboss');
                     p.innerText = 'Vidas: ' + vidaBoss;
+                    vidaBoss > 1 ? 1 : victory();
 
                 } else {
 
@@ -209,6 +254,21 @@ function gameOver() {//pantalla de game over y paro los intervalos
     clearInterval(intervaloEscenario);
 }
 
+function victory() {
+    console.log('Victoria');
+    gameOverDiv.style.display = 'block';
+    gameOverDiv.style.backgroundColor = 'green';
+    let p = document.querySelector('.gameover p').innerText = '¡¡¡¡¡¡¡VICTORY!!!!!!!'
+    clearInterval(seta);
+    clearInterval(intervaloEscenario);
+}
+
+function clearBadGuys() {
+    malosArray.forEach((m, index) => {
+        m.parentNode.removeChild(m);
+        malosArray.splice(index, 1);
+    })
+}
 
 function colision(a, b) {  //Detector de colisiones entre objetos HTML
     const rect1 = a.getBoundingClientRect();
