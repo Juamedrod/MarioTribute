@@ -11,7 +11,7 @@ let bossTargets = new Array();//array que contiene al boss y todas las refereenc
 
 //Gameplay vars
 let vidas = 3;
-let vidaBoss = 5;
+let vidaBoss = 9;
 let jumping = false;
 let enemigosDestruidos = 0;
 const enemigosHastaBoss = 15;
@@ -31,7 +31,8 @@ let intervaloEscenario = setInterval(moverEscenario, 100);
 
 let tiempoIntervalo = Math.random() * 5000 + 200;
 let seta = setInterval(salirSeta, tiempoIntervalo);//intervalo de spawn de setas en el modo normal
-score.innerText = `Enemy killed: ${enemigosDestruidos}`;
+score.innerText = `Enemy killed: ${enemigosDestruidos}
+SHOT WITH E KEY`;
 
 function moverEscenario() {//intervalo global que gobierna los aspectos basicos del juego.
     avanceEscenario -= 10;
@@ -70,7 +71,7 @@ function correr(e) {
 }
 
 
-function finalBossStage() {
+function finalBossStage() {  //Set the game to the final boss stage phase, the migthy gaming mouse railing hadoukens
 
     clearInterval(seta);
     isBossPhase = true;
@@ -178,7 +179,8 @@ function proyectilCheck() {  //Check de las colisiones de los proyectiles y el u
                 proyectil.parentNode.removeChild(proyectil);
                 proyectiles.splice(proyIndex, 1);
                 enemigosDestruidos++;
-                score.innerText = `Enemy killed: ${enemigosDestruidos}`;
+                score.innerText = `Enemy killed: ${enemigosDestruidos} 
+                SHOT WITH E KEY`;
                 if (enemigosDestruidos >= enemigosHastaBoss && !isBossPhase) finalBossStage();
             }
         });
