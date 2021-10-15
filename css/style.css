@@ -12,9 +12,19 @@
 
 #runner {
     position: absolute;
-    bottom: 30px;
+    bottom: 40px;
     left: 50px;
+    
+    
 }
+
+#score{
+    color: white;
+    text-shadow: 2px 2px 2px black;
+    font-size: 150%;
+}
+
+
 
 .proyectil {
     position: absolute;
@@ -22,9 +32,11 @@
     left: 50px;
     width: 40px;
     height: 10px;
-    background-color: red;
-    border-radius: 1px ;
-    border: 1px dotted yellowgreen;
+    background-color: red;    
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border: 2px dotted black;
+    transition: 0.25s;
 }
 
 .malo{

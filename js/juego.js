@@ -2,20 +2,29 @@ let escenario = document.querySelector('#escenario');
 let mario = document.querySelector('#runner img');
 let gameOverDiv = document.querySelector('.gameover');
 let runner = document.querySelector('#runner');
+let score = document.querySelector('#score');
 let avanceEscenario = 0;
 let malosArray = new Array();
 let proyectiles = new Array();
 
+
+//Gameplay vars
 let vidas = 3;
-let uniqueId = 0;
-let intervaloEscenario = setInterval(moverEscenario, 100);
+let jumping = false;
+let enemigosDestruidos = 0;
+
+score.innerText = `Enemy killed: ${enemigosDestruidos}`;
+
+
 
 document.addEventListener('keydown', saltar);
 document.addEventListener('keyup', correr);
 document.addEventListener('keyup', disparar);
 
 //var seta = setTimeout(salirSeta, 5000);
-let tiempoIntervalo = Math.random() * 5000;
+
+let intervaloEscenario = setInterval(moverEscenario, 100);
+let tiempoIntervalo = Math.random() * 5000 + 200;
 let seta = setInterval(salirSeta, tiempoIntervalo);
 
 
@@ -23,7 +32,7 @@ function moverEscenario() {
     avanceEscenario -= 10;
     escenario.style.backgroundPosition = avanceEscenario + 'px 0px';
     proyectilCheck();
-    //moveEnemies(); REMOVER COENTARIO VERSION FINAL
+    moveEnemies();
 
 }
 
@@ -32,34 +41,40 @@ function saltar(e) {
         case 32:
             mario.src = "images/salto.gif";
             mario.style.display = 'inline-block';
-            mario.style.paddingBottom = "100px";
+            mario.style.marginBottom = "100px";
+            jumping = true;
+            console.log('Estoy saltando? ', jumping);
             break;
     }
-
 }
 
 function correr(e) {
     switch (e.keyCode) {
         case 32:
             mario.src = "images/mario.gif";
-            mario.style.paddingBottom = "0px";
+            mario.style.marginBottom = "0px";
+            jumping = false;
+            console.log('Estoy saltando? ', jumping);
             break;
     }
+
 }
 
-function disparar(e) {
-    if (e.keyCode == 69 && proyectiles.length < 2) {
+function disparar(e) {//disparo del proyectil
+    if (e.keyCode == 69 && proyectiles.length < 2 && !jumping) {
         let proyectil = document.createElement('div');
         proyectil.style.marginLeft = '80px';
         proyectil.className = 'proyectil';
         proyectiles.push(proyectil)
         runner.appendChild(proyectil);
+        console.log(jumping);
+        if (jumping) proyectil.style.Bottom = "100px";
     }
 
 }
 
 
-function salirSeta() {
+function salirSeta() { //spawn de setas
     let malo = document.createElement('div');
     malo.style.marginRight = '0px';
     malo.className = 'malo';
@@ -68,40 +83,54 @@ function salirSeta() {
 
 }
 
-function moveEnemies() {
-    //me quedé aqui, tengo que recorrer el array de enemigos y moverlos
+function moveEnemies() {//muevo los enemigos en el array de enemigos.
+
     malosArray.forEach((malo, index) => {
 
         let actualOffset = parseInt(malo.style.marginRight.slice(0, -2));
-        console.log(actualOffset);
+
         if (colision(mario, malo)) {
             vidas > 1 ? dañar(malo) : gameOver()
         } else if (actualOffset <= 850) {
+
             actualOffset += 15;
-            console.log(actualOffset);
             malo.style.marginRight = actualOffset + 'px';
         } else {
             malo.parentNode.removeChild(malo);
             malosArray.splice(index, 1);
+
         }
     });
 }
 
-function proyectilCheck() {
+
+function proyectilCheck() {  //Check de las colisiones de los proyectiles y el update de su posicion.
     proyectiles.forEach((proyectil, proyIndex) => {
         malosArray.forEach((malo, index) => {
             if (colision(proyectil, malo)) {
+                console.log('proyectil hit');
                 malo.parentNode.removeChild(malo);
                 malosArray.splice(index, 1);
                 proyectil.parentNode.removeChild(proyectil);
                 proyectiles.splice(proyIndex, 1);
+                enemigosDestruidos++;
+                score.innerText = `Enemy killed: ${enemigosDestruidos}`;
             }
         });
-
-        //check si el proyectil sale de mapa
-
     })
 
+    proyectiles.forEach((proyectil, proyIndex) => {
+
+        let actualOffset = parseInt(proyectil.style.marginLeft.slice(0, -2));
+        if (actualOffset <= 850) {
+            actualOffset += 25;
+            proyectil.style.marginLeft = actualOffset + 'px';
+        } else {
+            proyectil.parentNode.removeChild(proyectil);
+            proyectiles.splice(proyIndex, 1);
+
+        }
+    })
 
 }
 
@@ -111,7 +140,7 @@ function dañar(malo, index) {
     vidas--;
 }
 
-function gameOver() {
+function gameOver() {//pantalla de game over y paro los intervalos
     console.log('game over');
     gameOverDiv.style.display = 'block';
     clearInterval(seta);
@@ -119,7 +148,7 @@ function gameOver() {
 }
 
 
-function colision(a, b) {
+function colision(a, b) {  //Detector de colisiones entre objetos HTML
     const rect1 = a.getBoundingClientRect();
     const rect2 = b.getBoundingClientRect();
     const isInHoriztonalBounds =
