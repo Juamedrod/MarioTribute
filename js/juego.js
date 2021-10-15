@@ -6,16 +6,16 @@ let score = document.querySelector('#score');
 let avanceEscenario = 0;
 let malosArray = new Array();
 let proyectiles = new Array();
+let bossTargets = new Array();//array que contiene al boss y todas las refereencias a sus esbirros
 
 
 //Gameplay vars
 let vidas = 3;
+let vidaBoss = 5;
 let jumping = false;
 let enemigosDestruidos = 0;
-
-score.innerText = `Enemy killed: ${enemigosDestruidos}`;
-
-
+const enemigosHastaBoss = 1;
+let isBossPhase = false;
 
 document.addEventListener('keydown', saltar);
 document.addEventListener('keyup', correr);
@@ -24,14 +24,15 @@ document.addEventListener('keyup', disparar);
 //var seta = setTimeout(salirSeta, 5000);
 
 let intervaloEscenario = setInterval(moverEscenario, 100);
+
 let tiempoIntervalo = Math.random() * 5000 + 200;
 let seta = setInterval(salirSeta, tiempoIntervalo);
-
+score.innerText = `Enemy killed: ${enemigosDestruidos}`;
 
 function moverEscenario() {
     avanceEscenario -= 10;
     escenario.style.backgroundPosition = avanceEscenario + 'px 0px';
-    proyectilCheck();
+    isBossPhase ? proyectilCheckBoss() : proyectilCheck();
     moveEnemies();
 
 }
@@ -57,6 +58,27 @@ function correr(e) {
             console.log('Estoy saltando? ', jumping);
             break;
     }
+
+}
+
+
+function finalBossStage() {
+    clearInterval(seta);
+    isBossPhase = true;
+    setTimeout(() => {
+        let boss = document.createElement('div');
+        let imgBoss = document.createElement('img');
+        let p = document.createElement('p');
+        p.innerText = 'Vidas: ' + vidaBoss;
+        p.className = 'scoreboss';
+        imgBoss.src = "images/mouse.gif"
+        boss.style.marginRight = '0px';
+        boss.className = 'boss';
+        boss.appendChild(imgBoss);
+        boss.appendChild(p);
+        escenario.appendChild(boss);
+        bossTargets.push(boss);
+    }, 2000);
 
 }
 
@@ -115,6 +137,46 @@ function proyectilCheck() {  //Check de las colisiones de los proyectiles y el u
                 proyectiles.splice(proyIndex, 1);
                 enemigosDestruidos++;
                 score.innerText = `Enemy killed: ${enemigosDestruidos}`;
+                if (enemigosDestruidos >= enemigosHastaBoss && !isBossPhase) finalBossStage();
+            }
+        });
+    })
+
+    proyectiles.forEach((proyectil, proyIndex) => {
+
+        let actualOffset = parseInt(proyectil.style.marginLeft.slice(0, -2));
+        if (actualOffset <= 850) {
+            actualOffset += 25;
+            proyectil.style.marginLeft = actualOffset + 'px';
+        } else {
+            proyectil.parentNode.removeChild(proyectil);
+            proyectiles.splice(proyIndex, 1);
+
+        }
+    })
+
+}
+
+function proyectilCheckBoss() {
+
+    proyectiles.forEach((proyectil, proyIndex) => {
+        bossTargets.forEach((bosstarget, index) => {
+            if (colision(proyectil, bosstarget)) {
+                console.log('proyectil hit');
+                if (index == 0) {
+                    vidaBoss--;
+                    let p = document.createElement('p');
+                    p.innerText = 'Vidas: ' + vidaBoss;
+
+                } else {
+
+                    bosstarget.parentNode.removeChild(bosstarget);
+                    bossTargets.splice(index, 1);
+                    proyectil.parentNode.removeChild(proyectil);
+                    proyectiles.splice(proyIndex, 1);
+                }
+
+
             }
         });
     })
