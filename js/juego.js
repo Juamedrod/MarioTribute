@@ -14,7 +14,7 @@ let vidas = 3;
 let vidaBoss = 9;
 let jumping = false;
 let enemigosDestruidos = 0;
-const enemigosHastaBoss = 15;
+const enemigosHastaBoss = 10;
 let isBossPhase = false;
 
 //Boss vars
@@ -29,10 +29,11 @@ document.addEventListener('keyup', disparar);
 
 let intervaloEscenario = setInterval(moverEscenario, 100);
 
-let tiempoIntervalo = Math.random() * 5000 + 200;
+let tiempoIntervalo = Math.random() * 5000 + 50;
 let seta = setInterval(salirSeta, tiempoIntervalo);//intervalo de spawn de setas en el modo normal
 score.innerText = `Enemy killed: ${enemigosDestruidos}
-SHOT WITH E KEY`;
+SHOT WITH E KEY
+JUMP with SPACE BAR`;
 
 function moverEscenario() {//intervalo global que gobierna los aspectos basicos del juego.
     avanceEscenario -= 10;
@@ -180,7 +181,8 @@ function proyectilCheck() {  //Check de las colisiones de los proyectiles y el u
                 proyectiles.splice(proyIndex, 1);
                 enemigosDestruidos++;
                 score.innerText = `Enemy killed: ${enemigosDestruidos} 
-                SHOT WITH E KEY`;
+                SHOT WITH E KEY
+                JUMP with SPACE BAR`;
                 if (enemigosDestruidos >= enemigosHastaBoss && !isBossPhase) finalBossStage();
             }
         });
